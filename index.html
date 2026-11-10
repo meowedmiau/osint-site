@@ -1,1 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>entity — osint board</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="bar">
+    <h1 class="logo">osint<span class="dot">.</span>board</h1>
+    <input id="search" type="search" placeholder="filter tools…" autocomplete="off" spellcheck="false">
+  </header>
 
+  <main id="board" class="board"></main>
+
+  <div id="drawer" class="drawer" aria-hidden="true">
+    <div class="drawer-inner">
+      <button id="drawer-close" class="x" aria-label="close">×</button>
+      <h2 id="drawer-title"></h2>
+      <p id="drawer-desc" class="desc"></p>
+      <form id="drawer-form" class="drawer-form">
+        <input id="drawer-input" type="text" placeholder="input…" autocomplete="off" spellcheck="false">
+        <button type="submit">open</button>
+      </form>
+      <ul id="drawer-links" class="links"></ul>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
