@@ -1,70 +1,54 @@
-export function renderBoard(container, tools, onSelect) {
-  container.innerHTML = "";
-  if (tools.length === 0) {
-    const empty = document.createElement("div");
-    empty.className = "card";
-    empty.innerHTML = '<div class="cat">empty</div><div class="name">no tools match</div><div class="desc">clear the filter and try again.</div>';
-    container.appendChild(empty);
-    return;
-  }
+export function renderResults(url, host) {
+  const results = document.getElementById("drawer-results");
+  results.innerHTML = "";
 
-  const frag = document.createDocumentFragment();
-  for (const t of tools) {
-    const card = document.createElement("button");
-    card.className = "card";
-    card.type = "button";
-    card.dataset.id = t.id;
-    card.innerHTML = `
-      <div class="cat">${escapeHtml(t.category)}</div>
-      <div class="name">${escapeHtml(t.name)}</div>
-      <div class="desc">${escapeHtml(t.desc)}</div>
-    `;
-    card.addEventListener("click", () => onSelect(t.id));
-    frag.appendChild(card);
-  }
-  container.appendChild(frag);
-}
+  const wrap = document.createElement("div");
+  wrap.className = "result";
 
-export function renderDrawer(tool, onSubmit) {
-  const title = document.getElementById("drawer-title");
-  const desc = document.getElementById("drawer-desc");
-  const form = document.getElementById("drawer-form");
-  const input = document.getElementById("drawer-input");
-  const links = document.getElementById("drawer-links");
+  const urlEl = document.createElement("div");
+  urlEl.className = "url";
+  urlEl.textContent = url;
 
-  title.textContent = tool.name;
-  desc.textContent = tool.desc + (tool.hint ? " " + tool.hint : "");
-  links.innerHTML = "";
-  input.value = "";
-  input.focus();
+  const row = document.createElement("div");
+  row.className = "row";
 
-  form.onsubmit = (e) => {
-    e.preventDefault();
-    const v = input.value.trim();
-    if (!v) return;
-    onSubmit(tool, v);
-  };
-}
+  const copyBtn = document.createElement("button");
+  copyBtn.textContent = "copy";
+  copyBtn.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      copyBtn.textContent = "copied";
+      setTimeout(() => { copyBtn.textContent = "copy"; }, 1200);
+    } catch {
+      copyBtn.textContent = "copy failed";
+    }
+  });
 
-export function renderLinks(url) {
-  const links = document.getElementById("drawer-links");
-  links.innerHTML = "";
+  const loadBtn = document.createElement("button");
+  loadBtn.className = "primary";
+  loadBtn.textContent = "load inline";
+  loadBtn.addEventListener("click", () => {
+    if (wrap.querySelector("iframe")) return;
+    const frame = document.createElement("iframe");
+    frame.src = url;
+    frame.loading = "lazy";
+    frame.referrerPolicy = "no-referrer";
+    frame.allow = "clipboard-read; clipboard-write";
+    frame.title = host;
+    wrap.appendChild(frame);
+  });
 
-  const li = document.createElement("li");
-  const a = document.createElement("a");
-  a.href = url;
-  a.target = "_blank";
-  a.rel = "noopener noreferrer";
-  a.textContent = url;
-  li.appendChild(a);
-  links.appendChild(li);
-}
+  const tabBtn = document.createElement("button");
+  tabBtn.textContent = "open in tab";
+  tabBtn.addEventListener("click", () => {
+    window.open(url, "_blank", "noopener,noreferrer");
+  });
 
-function escapeHtml(s) {
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+  row.appendChild(copyBtn);
+  row.appendChild(loadBtn);
+  row.appendChild(tabBtn);
+
+  wrap.appendChild(urlEl);
+  wrap.appendChild(row);
+  results.appendChild(wrap);
 }
